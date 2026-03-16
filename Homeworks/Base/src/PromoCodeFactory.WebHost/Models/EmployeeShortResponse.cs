@@ -1,13 +1,6 @@
 ﻿using System;
 
-namespace PromoCodeFactory.WebHost.Models
-{
-    public class EmployeeShortResponse
-    {
-        public Guid Id { get; set; }
-        
-        public string FullName { get; set; }
-
-        public string Email { get; set; }
-    }
-}
+namespace PromoCodeFactory.WebHost.Models;
+public record EmployeeShortResponse(Guid Id,
+                                    string FullName,
+                                    string Email);
