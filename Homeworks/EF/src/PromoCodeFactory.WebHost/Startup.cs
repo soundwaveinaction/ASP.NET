@@ -1,17 +1,22 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
 using PromoCodeFactory.DataAccess.Data;
+using PromoCodeFactory.DataAccess.Persistance;
 using PromoCodeFactory.DataAccess.Repositories;
+using System;
 
 namespace PromoCodeFactory.WebHost
 {
-    public class Startup
+    public class Startup(IConfiguration Configuration)
     {
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -26,6 +31,9 @@ namespace PromoCodeFactory.WebHost
             services.AddScoped(typeof(IRepository<Customer>), (x) =>
                 new InMemoryRepository<Customer>(FakeDataFactory.Customers));
 
+            services.AddDbContext<PromoCodeDbContext>(options =>
+            options.UseSqlite(Configuration.GetConnectionString("Default")));
+
             services.AddOpenApiDocument(options =>
             {
                 options.Title = "PromoCode Factory API Doc";
@@ -34,11 +42,14 @@ namespace PromoCodeFactory.WebHost
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, PromoCodeDbContext context)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                context.Database.EnsureDeleted();
+
+                context.Database.EnsureCreated();
             }
             else
             {

@@ -1,4 +1,5 @@
 ﻿using PromoCodeFactory.Core.Domain;
+using PromoCodeFactory.Core.Domain.PromoCodeManagement;
 using System;
 using System.Collections.Generic;
 
@@ -8,6 +9,7 @@ namespace PromoCodeFactory.Core.Domain.Administration
         : BaseEntity
     {
         public string FirstName { get; set; }
+
         public string LastName { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
@@ -15,7 +17,8 @@ namespace PromoCodeFactory.Core.Domain.Administration
         public string Email { get; set; }
 
         public Role Role { get; set; }
-
+        public Guid RoleId { get; set; }
         public int AppliedPromocodesCount { get; set; }
+        public List<PromoCode> PromoCodes { get; set; }
     }
 }
